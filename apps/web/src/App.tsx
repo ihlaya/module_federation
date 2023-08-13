@@ -1,24 +1,41 @@
-import { Button } from 'ui';
+import { erc20, ethers, native } from 'evm';
+import { useEffect, useState } from 'react';
 import './App.css';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+
+interface ContractDetails {
+  symbol: string;
+  decimals: number;
+}
+
 function App() {
+  const [contractDetails, setContractDetails] = useState<ContractDetails>();
+  const [nativeBalance, setNativeBalance] = useState<string>('0');
+  //@ts-ignore
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const Bdlty = new erc20.contract(
+    '0x43981ff140dF790BEfe60EE2e721b67aF4c114F4',
+    provider
+  );
+
+  useEffect(() => {
+    (async () => {
+      const signer = await provider.getSigner();
+      const symbol = await Bdlty.symbol();
+      const decimals = await Bdlty.decimals();
+      setContractDetails({ symbol, decimals: decimals });
+      const balance = await native.getSignerBalance(signer);
+      setNativeBalance(balance.parsedBalance);
+    })();
+  }, []);
+
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React 1</h1>
+      <h1>Taked first wallet in MM</h1>
       <div className="card">
-        <Button />
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <p>Native balance = {nativeBalance}</p>
+        {contractDetails && (
+          <p>contractDetails = {JSON.stringify(contractDetails, null, 2)}</p>
+        )}
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
