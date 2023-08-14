@@ -1,5 +1,5 @@
 import { Contract, ethers } from 'ethers';
-import { ChainId, multicall_addresses } from '../contnants';
+import { ChainId, multicall_addresses } from '../constants';
 import { MULTICALL_ABI } from './multicall.abi';
 
 export class MulticallContract {
